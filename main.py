@@ -37,6 +37,8 @@ class Application(tkinter.Frame):
 
         # self.frame = Frame(master)
         self.root = root
+        self.top = Toplevel(self.root)
+       
         # self.frame.pack()
         self.create_widgets()
         self.root.after(30000,self.update)
@@ -111,7 +113,9 @@ class Application(tkinter.Frame):
                 print(fuel_level_module.calculate_element())
                 # round_data_3 = round(fuel_level_module.calculate_element(),1)
 
-        round_data_1 = round(odometer_module.calculate_element(), 1)
+
+
+        round_data_1 = round(odometer_module.calculate_element() , 1)
         round_data_2 = round(fuel_economy_module.calculate_element(), 1)
         # round_data_3 = round(fuel_level_module.calculate_element(), 1)
         round_data_4 = round(engine_hours_module.calculate_element(), 1)
@@ -119,36 +123,98 @@ class Application(tkinter.Frame):
 
         os.system('pkill gpicview')
         plate = DisplayManager2.DataPlate('dataplate.txt')
+
+
+
+        
         plate.openFile()
 
-        qr = DisplayManager2.QRCreator(round_data_1, round_data_2, -1, round_data_4, round_data_5, plate)
+        qr = DisplayManager2.QRCreator(odometer_module.calculate_element(),fuel_economy_module.calculate_element(),-1, engine_hours_module.calculate_element(),fuel_used_module.calculate_element(), plate)
+        #qr = DisplayManager2.QRCreator(round_data_1, round_data_2, -1, round_data_4, round_data_5, plate)
         # qr = DisplayManager2.QRCreator(round_data_1, round_data_2, round_data_3, round_data_4, round_data_5, plate)
         qr.display()
-
+        self.img = PhotoImage(file='image.png')
 
         Data = [str(plate.serial_number), str(plate.niin),str(plate.tamcn),str(plate.test),"","   Value:", "   " + str(round_data_1), "   " + str(round_data_4), "   " + str(round_data_5), "   " + str(round_data_2), "   " + str(-1)]
+        # Data = [str(plate.serial_number), str(plate.niin),str(plate.tamcn),str(plate.test),"","   Value:", "   " + str(odometer_module.calculate_element()), "   " + str(engine_hours_module.calculate_element()), "   " + str(fuel_used_module.calculate_element()), "   " + str(fuel_economy_module.calculate_element()), "   " + str(-1)]
         Labels = ["Serial Number:","NIIN:","TAMCN:","ID Number:","","Parameter:","Vehicle Odometer:","Total Engine Hours:","Total Fuel Used:","Fuel Economy:","Fuel Level 1:"]
         Units = ["","","","","","Units:","Miles","Hours","Gallons","Miles per Gallon","%"]
         height = len(Data)
         width = 3
 
 
+        ws = root.winfo_screenwidth()
+        hs = root.winfo_screenheight()
+
+        x = (ws/2) 
+        y = (hs/2)
+
+        ratio = 1366/18
+        size = ws/ratio
+        font_size = int(round(size))
+
+        wratio_qr = 1366/700
+        width_qr = ws/wratio_qr
+        qr_width = int(round(width_qr))
+
+        hratio_qr = 768/700
+        height_qr = hs/hratio_qr
+        qr_height = int(round(height_qr))
+
+        wratio_dis = 1920/825
+        width_dis = ws/wratio_dis
+        dis_width = int(round(width_dis))
+
+        hratio_dis = 1080/500
+        height_dis = hs/hratio_dis
+        dis_height = int(round(height_dis))
+
+        x_dis = x-dis_width
+        dis_xpos = x + (x_dis)/2
+
+        y_dis = hs-dis_height
+        dis_ypos = (y_dis)/2
+
+        x_qr = x-qr_width
+        qr_xpos = (x_qr)/2
+
+        y_qr = hs-qr_height
+        qr_ypos = (y_qr)/2
+        
+        #x_qr = x
+        #qr_width = ws/
+        
+
         for i in range(height):
             for j in range(width):
                 if j == 1:
-                    label = Label(self.root, text = Data[i],font=(None,15))
+                    label = Label(self.root, text = Data[i],font=(None,font_size))
                     label.grid(row=i, column=j, sticky= W)
                 elif j == 2:
-                    label = Label(self.root, text = Units[i],font=(None,15))
+                    label = Label(self.root, text = Units[i],font=(None,font_size))
                     label.grid(row=i,column =j,sticky = W)
                 else:
-                    label = Label(self.root, text = Labels[i],font=(None,15))
+                    label = Label(self.root, text = Labels[i],font=(None,font_size))
                     label.grid(row=i,column =j,sticky = W)
         # height = 8
         # width = 3
-        self.root.geometry('500x310+650+350')
+
+
+
+        
+        self.root.geometry('%dx%d+%d+%d' % (dis_width,dis_height, dis_xpos,dis_ypos))
+        self.top.geometry('%dx%d+%d+%d' % (qr_width,qr_height,qr_xpos,qr_ypos))
         # label = Label(root, text= totalData, width=150, font=(None,15))
         # label.pack()
+
+        self.top.title('QR Code')
+        self.root.title('Vehicle Information')
+        self.panel = Label(self.top,image=self.img)
+        self.panel.pack(side='bottom', fill='both',expand='yes')
+
+
+
+        
     def update(self):
 
         logger = logging.getLogger(__name__)
@@ -217,47 +283,99 @@ class Application(tkinter.Frame):
                 print(fuel_level_module.calculate_element())
                 # round_data_3 = round(fuel_level_module.calculate_element(),1)
 
-        round_data_1 = round(odometer_module.calculate_element(), 1)
+
+        round_data_1 = round(odometer_module.calculate_element() , 1)
         round_data_2 = round(fuel_economy_module.calculate_element(), 1)
         # round_data_3 = round(fuel_level_module.calculate_element(), 1)
         round_data_4 = round(engine_hours_module.calculate_element(), 1)
         round_data_5 = round(fuel_used_module.calculate_element(), 1)
-
+        
         os.system('pkill gpicview')
         plate = DisplayManager2.DataPlate('dataplate.txt')
         plate.openFile()
 
-        qr = DisplayManager2.QRCreator(round_data_1, round_data_2, -1, round_data_4, round_data_5, plate)
+        qr = DisplayManager2.QRCreator(odometer_module.calculate_element(),fuel_economy_module.calculate_element(),-1, engine_hours_module.calculate_element(),fuel_used_module.calculate_element(), plate)
+
+        # qr = DisplayManager2.QRCreator(round_data_1, round_data_2, -1, round_data_4, round_data_5, plate)
         # qr = DisplayManager2.QRCreator(round_data_1, round_data_2, round_data_3, round_data_4, round_data_5, plate)
         qr.display()
 
-
         Data = [str(plate.serial_number), str(plate.niin),str(plate.tamcn),str(plate.test),"","   Value:", "   " + str(round_data_1), "   " + str(round_data_4), "   " + str(round_data_5), "   " + str(round_data_2), "   " + str(-1)]
+        # Data = [str(plate.serial_number), str(plate.niin),str(plate.tamcn),str(plate.test),"","   Value:", "   " + str(odometer_module.calculate_element()), "   " + str(engine_hours_module.calculate_element()), "   " + str(fuel_used_module.calculate_element()), "   " + str(fuel_economy_module.calculate_element()), "   " + str(-1)]
         Labels = ["Serial Number:","NIIN:","TAMCN:","ID Number:","","Parameter:","Vehicle Odometer:","Total Engine Hours:","Total Fuel Used:","Fuel Economy:","Fuel Level 1:"]
         Units = ["","","","","","Units:","Miles","Hours","Gallons","Miles per Gallon","%"]
         height = len(Data)
         width = 3
 
+        ws = root.winfo_screenwidth()
+        hs = root.winfo_screenheight()
+
+        x = (ws/2) 
+        y = (hs/2)
+
+        ratio = 1366/18
+        size = ws/ratio
+        font_size = int(round(size))
+
+        wratio_qr = 1366/700
+        width_qr = ws/wratio_qr
+        qr_width = int(round(width_qr))
+
+        hratio_qr = 768/700
+        height_qr = hs/hratio_qr
+        qr_height = int(round(height_qr))
+
+        wratio_dis = 1920/825
+        width_dis = ws/wratio_dis
+        dis_width = int(round(width_dis))
+
+        hratio_dis = 1080/500
+        height_dis = hs/hratio_dis
+        dis_height = int(round(height_dis))
+
+        x_dis = x-dis_width
+        dis_xpos = x + (x_dis)/2
+
+        y_dis = hs-dis_height
+        dis_ypos = (y_dis)/2
+
+        x_qr = x-qr_width
+        qr_xpos = (x_qr)/2
+
+        y_qr = hs-qr_height
+        qr_ypos = (y_qr)/2
+        
+        #x_qr = x
+        #qr_width = ws/
+        
 
         for i in range(height):
             for j in range(width):
                 if j == 1:
-                    label = Label(self.root, text = Data[i],font=(None,15))
+                    label = Label(self.root, text = Data[i],font=(None,font_size))
                     label.grid(row=i, column=j, sticky= W)
                 elif j == 2:
-                    label = Label(self.root, text = Units[i],font=(None,15))
+                    label = Label(self.root, text = Units[i],font=(None,font_size))
                     label.grid(row=i,column =j,sticky = W)
                 else:
-                    label = Label(self.root, text = Labels[i],font=(None,15))
+                    label = Label(self.root, text = Labels[i],font=(None,font_size))
                     label.grid(row=i,column =j,sticky = W)
         # height = 8
         # width = 3
-        self.root.geometry('500x310+650+350')
+
+
+
+        
+        self.root.geometry('%dx%d+%d+%d' % (dis_width,dis_height, dis_xpos,dis_ypos))
+        self.top.geometry('%dx%d+%d+%d' % (qr_width,qr_height,qr_xpos,qr_ypos))
         # label = Label(root, text= totalData, width=150, font=(None,15))
         # label.pack()
 
         print('Updating...........')
-
+        self.img = PhotoImage(file='image.png')
+        self.panel.configure(image=self.img)
+        self.panel.image = self.img
+                
         
         self.root.after(30000,self.update)
 
