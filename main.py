@@ -16,7 +16,7 @@ from can.protocols.j1939.nodename import NodeName
 import os
 import time
 import NewBus
-import DisplayManager2
+import DisplayManager
 import tkinter
 
 UPDATE_RATE = 4000
@@ -122,14 +122,14 @@ class Application(tkinter.Frame):
         round_data_5 = round(fuel_used_module.calculate_element(), 1)
 
         os.system('pkill gpicview')
-        plate = DisplayManager2.DataPlate('dataplate.txt')
+        plate = DisplayManager.DataPlate('dataplate.txt')
 
 
 
         
         plate.openFile()
 
-        qr = DisplayManager2.QRCreator(odometer_module.calculate_element(),fuel_economy_module.calculate_element(),-1, engine_hours_module.calculate_element(),fuel_used_module.calculate_element(), plate)
+        qr = DisplayManager.QRCreator(odometer_module.calculate_element(),fuel_economy_module.calculate_element(),-1, engine_hours_module.calculate_element(),fuel_used_module.calculate_element(), plate)
         #qr = DisplayManager2.QRCreator(round_data_1, round_data_2, -1, round_data_4, round_data_5, plate)
         # qr = DisplayManager2.QRCreator(round_data_1, round_data_2, round_data_3, round_data_4, round_data_5, plate)
         qr.display()
@@ -291,10 +291,10 @@ class Application(tkinter.Frame):
         round_data_5 = round(fuel_used_module.calculate_element(), 1)
         
         os.system('pkill gpicview')
-        plate = DisplayManager2.DataPlate('dataplate.txt')
+        plate = DisplayManager.DataPlate('dataplate.txt')
         plate.openFile()
 
-        qr = DisplayManager2.QRCreator(odometer_module.calculate_element(),fuel_economy_module.calculate_element(),-1, engine_hours_module.calculate_element(),fuel_used_module.calculate_element(), plate)
+        qr = DisplayManager.QRCreator(odometer_module.calculate_element(),fuel_economy_module.calculate_element(),-1, engine_hours_module.calculate_element(),fuel_used_module.calculate_element(), plate)
 
         # qr = DisplayManager2.QRCreator(round_data_1, round_data_2, -1, round_data_4, round_data_5, plate)
         # qr = DisplayManager2.QRCreator(round_data_1, round_data_2, round_data_3, round_data_4, round_data_5, plate)
